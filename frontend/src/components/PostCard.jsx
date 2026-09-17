@@ -117,7 +117,11 @@ export default function PostCard({ post, isOwner, onDealingDone }) {
       <div className="p-4 pt-0">
         {isOwner ? (
           <button
-            onClick={() => onDealingDone(post.id)}
+            onClick={() => {
+              if (window.confirm('Mark this listing as dealt? It will be archived from active marketplace feeds.')) {
+                onDealingDone(post.id);
+              }
+            }}
             className="w-full flex items-center justify-center gap-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl shadow-xs transition-colors"
           >
             <CheckCircle2 className="w-4 h-4" />

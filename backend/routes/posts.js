@@ -100,14 +100,15 @@ router.get('/', async (req, res) => {
     `;
     const params = [];
 
-    if (targetUserType) {
-      params.push(targetUserType);
-      queryText += ` AND p.user_type = $${params.length}`;
+    if (targetUserType === 'farmer') {
+      queryText += ` AND (p.user_type = 'farmer' OR p.category = 'produce')`;
+    } else if (targetUserType === 'buyer') {
+      queryText += ` AND (p.user_type = 'buyer' OR p.category = 'requirement')`;
     }
 
     if (cropType) {
-      params.push(cropType);
-      queryText += ` AND p.crop_type = $${params.length}`;
+      params.push(cropType.trim());
+      queryText += ` AND LOWER(p.crop_type) = LOWER($${params.length})`;
     }
 
     if (category) {

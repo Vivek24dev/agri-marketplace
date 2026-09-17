@@ -691,25 +691,29 @@ function queryEmbedded(text, params = []) {
 function executePostsQuery(sql, params) {
   let posts = embeddedDb.posts.filter(p => p.is_active);
 
-  // Parse condition checks based on query structure
-  if (params && params.length > 0) {
-    // If target user_type is filtered:
-    // e.g. p.user_type = $1
-    if (/p\.user_type = \$/i.test(sql)) {
-      const targetUserType = params[0];
-      posts = posts.filter(p => p.user_type === targetUserType);
+  // Match compound checks
+  if (sql.includes("p.user_type = 'farmer' OR p.category = 'produce'")) {
+    posts = posts.filter(p => p.user_type === 'farmer' || p.category === 'produce');
+  } else if (sql.includes("p.user_type = 'buyer' OR p.category = 'requirement'")) {
+    posts = posts.filter(p => p.user_type === 'buyer' || p.category === 'requirement');
+  } else if (/p\.user_type = \$/i.test(sql) && params && params.length > 0) {
+    const targetUserType = params[0];
+    posts = posts.filter(p => p.user_type === targetUserType);
+  }
+
+  // Parse crop_type filter
+  if (/crop_type/i.test(sql) && params && params.length > 0) {
+    const cropParam = params.find(p => p !== 'farmer' && p !== 'buyer' && p !== 'produce' && p !== 'requirement' && typeof p === 'string');
+    if (cropParam) {
+      posts = posts.filter(p => p.crop_type && p.crop_type.toLowerCase() === cropParam.toLowerCase());
     }
-    if (/p\.crop_type = \$/i.test(sql)) {
-      const cropIndex = sql.indexOf('p.crop_type = $2') !== -1 ? 1 : 0;
-      if (params[cropIndex]) {
-        posts = posts.filter(p => p.crop_type.toLowerCase() === params[cropIndex].toLowerCase());
-      }
-    }
-    if (/p\.category = \$/i.test(sql)) {
-      const categoryParam = params.find(param => param === 'produce' || param === 'requirement');
-      if (categoryParam) {
-        posts = posts.filter(p => p.category === categoryParam);
-      }
+  }
+
+  // Parse category filter
+  if (/p\.category = \$/i.test(sql) && params && params.length > 0) {
+    const categoryParam = params.find(p => p === 'produce' || p === 'requirement');
+    if (categoryParam) {
+      posts = posts.filter(p => p.category === categoryParam);
     }
   }
 

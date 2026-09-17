@@ -6,12 +6,14 @@ import PostCard from '../components/PostCard';
 import FPOCard from '../components/FPOCard';
 import CVUpload from '../components/CVUpload';
 import PriceDisplay from '../components/PriceDisplay';
+import PricePredictor from '../components/PricePredictor';
 import { COMMON_CROPS, KARNATAKA_DISTRICTS } from '../utils/helpers';
 import {
   ShoppingBag,
   PackageCheck,
   Users,
   TrendingUp,
+  LineChart,
   PlusCircle,
   Sparkles,
   CheckCircle2,
@@ -283,6 +285,18 @@ export default function FarmerDashboard() {
             >
               <TrendingUp className="w-4 h-4 text-emerald-600" />
               Mandi Benchmark
+            </button>
+
+            <button
+              onClick={() => setActiveTab('predictor')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+                activeTab === 'predictor'
+                  ? 'bg-white text-emerald-800 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <LineChart className="w-4 h-4 text-emerald-600" />
+              Price Predictor
             </button>
           </div>
         </div>
@@ -698,6 +712,13 @@ export default function FarmerDashboard() {
         {activeTab === 'prices' && (
           <div className="space-y-6">
             <PriceDisplay />
+          </div>
+        )}
+
+        {/* TAB 5: AI PRICE PREDICTOR */}
+        {activeTab === 'predictor' && (
+          <div className="space-y-6">
+            <PricePredictor />
           </div>
         )}
       </main>

@@ -39,11 +39,11 @@ export default function BuyerDashboard() {
   const [loadingMyReqs, setLoadingMyReqs] = useState(false);
 
   // Load Farmer Listings Feed
-  const fetchFarmerPosts = async () => {
+  const fetchFarmerPosts = async (cropFilter = selectedCropFilter) => {
     setLoadingFeed(true);
     try {
       const params = { userType: 'buyer' };
-      if (selectedCropFilter) params.cropType = selectedCropFilter;
+      if (cropFilter) params.cropType = cropFilter;
       const res = await api.get('/posts', { params });
       setFarmerPosts(res.data || []);
     } catch (err) {
@@ -204,8 +204,9 @@ export default function BuyerDashboard() {
                   <select
                     value={selectedCropFilter}
                     onChange={(e) => {
-                      setSelectedCropFilter(e.target.value);
-                      setTimeout(() => fetchFarmerPosts(), 50);
+                      const val = e.target.value;
+                      setSelectedCropFilter(val);
+                      fetchFarmerPosts(val);
                     }}
                     className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
@@ -217,8 +218,20 @@ export default function BuyerDashboard() {
                     ))}
                   </select>
 
+                  {selectedCropFilter && (
+                    <button
+                      onClick={() => {
+                        setSelectedCropFilter('');
+                        fetchFarmerPosts('');
+                      }}
+                      className="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold"
+                    >
+                      Clear
+                    </button>
+                  )}
+
                   <button
-                    onClick={fetchFarmerPosts}
+                    onClick={() => fetchFarmerPosts(selectedCropFilter)}
                     className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600"
                     title="Refresh feed"
                   >
