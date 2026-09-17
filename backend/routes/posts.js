@@ -16,7 +16,9 @@ router.post('/', async (req, res) => {
       pricePerUnit,
       grade,
       imageUrl,
-      userType
+      userType,
+      city_or_village,
+      district
     } = req.body;
 
     // Validate essential fields
@@ -37,8 +39,11 @@ router.post('/', async (req, res) => {
     if (userResult.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
+    const user = userResult.rows[0];
 
     const assignedGrade = grade || (category === 'produce' ? 'A' : 'N/A');
+    const resolvedCity = city_or_village || user.city_or_village || 'Devanahalli Village Hub';
+    const resolvedDistrict = district || user.district || 'Bengaluru';
 
     const result = await db.query(
       `INSERT INTO posts (user_id, title, description, category, crop_type, quantity, price_per_unit, grade, image_url, user_type, is_active)
@@ -59,6 +64,20 @@ router.post('/', async (req, res) => {
     );
 
     const post = result.rows[0];
+    post.city_or_village = resolvedCity;
+    post.district = resolvedDistrict;
+
+    // Also update in embedded db if present
+    const embeddedDb = db.getEmbeddedDb();
+    if (embeddedDb) {
+      const livePost = (embeddedDb.posts || []).find(p => p.id === post.id);
+      if (livePost) {
+        livePost.city_or_village = resolvedCity;
+        livePost.district = resolvedDistrict;
+        db.saveEmbeddedDb();
+      }
+    }
+
     return res.status(201).json(post);
   } catch (err) {
     console.error('Create post error:', err);
@@ -83,7 +102,7 @@ router.post('/upload-image', upload.single('image'), (req, res) => {
 // GET /api/posts - Fetch feed
 router.get('/', async (req, res) => {
   try {
-    const { userType, category, cropType } = req.query;
+    const { userType, category, cropType, city_or_village, district } = req.query;
 
     let targetUserType = null;
     if (userType === 'farmer') {
@@ -116,10 +135,26 @@ router.get('/', async (req, res) => {
       queryText += ` AND p.category = $${params.length}`;
     }
 
-    queryText += ` ORDER BY p.created_at DESC LIMIT 50`;
+    queryText += ` ORDER BY p.created_at DESC LIMIT 60`;
 
     const result = await db.query(queryText, params);
-    return res.status(200).json(result.rows);
+    let posts = result.rows;
+
+    if (city_or_village && city_or_village !== 'all' && city_or_village.trim() !== '') {
+      const term = city_or_village.toLowerCase().trim();
+      posts = posts.filter(p => {
+        const postLoc = (p.city_or_village || '').toLowerCase();
+        const postDist = (p.district || '').toLowerCase();
+        return postLoc.includes(term) || postDist.includes(term) || term.includes(postLoc);
+      });
+    }
+
+    if (district && district !== 'all' && district.trim() !== '') {
+      const dTerm = district.toLowerCase().trim();
+      posts = posts.filter(p => (p.district || '').toLowerCase().includes(dTerm));
+    }
+
+    return res.status(200).json(posts);
   } catch (err) {
     console.error('Fetch feed error:', err);
     return res.status(500).json({ error: 'Failed to fetch feed' });

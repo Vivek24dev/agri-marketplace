@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
-import { COMMON_CROPS, KARNATAKA_DISTRICTS, formatCurrency } from '../utils/helpers';
+import { COMMON_CROPS, KARNATAKA_DISTRICTS, KARNATAKA_CITIES_AND_VILLAGES, formatCurrency } from '../utils/helpers';
 import confetti from 'canvas-confetti';
+import StorageMap from './StorageMap';
+import CityVillageSelectorModal from './CityVillageSelectorModal';
 import {
   Store,
   Snowflake,
@@ -34,11 +36,27 @@ const RADIUS_OPTIONS = [
   { value: 5, label: 'Within 5 km' },
   { value: 10, label: 'Within 10 km' },
   { value: 25, label: 'Within 25 km' },
-  { value: 50, label: 'Within 50 km' }
+  { value: 50, label: 'Within 50 km' },
+  { value: 100, label: 'Within 100 km' },
+  { value: 'all', label: 'All 28 Facilities (Karnataka-wide)' }
 ];
 
 export default function StorageDiscovery({ onBookLogisticsRedirect }) {
   const { user } = useAuthStore();
+
+  // Selected Origin Village / City
+  const defaultLoc = KARNATAKA_CITIES_AND_VILLAGES.find(
+    (c) => c.name === user?.city_or_village
+  ) || {
+    name: user?.city_or_village || 'Devanahalli Village Hub',
+    district: user?.district || 'Bengaluru',
+    lat: user?.lat || 13.2483,
+    lng: user?.lng || 77.7126,
+    type: 'village'
+  };
+
+  const [activeLocation, setActiveLocation] = useState(defaultLoc);
+  const [showVillageModal, setShowVillageModal] = useState(false);
 
   const [storages, setStorages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -70,6 +88,8 @@ export default function StorageDiscovery({ onBookLogisticsRedirect }) {
     try {
       const params = {
         radius_km: selectedRadius,
+        latitude: activeLocation.lat,
+        longitude: activeLocation.lng,
         district: selectedDistrict !== 'All' ? selectedDistrict : undefined
       };
       if (selectedType !== 'all') params.storage_type = selectedType;
@@ -100,7 +120,7 @@ export default function StorageDiscovery({ onBookLogisticsRedirect }) {
   useEffect(() => {
     fetchStorages();
     fetchUserBookings();
-  }, [selectedRadius, selectedType, selectedDistrict]);
+  }, [selectedRadius, selectedType, selectedDistrict, activeLocation]);
 
   // Calculate duration and pricing
   const calculateDays = () => {
@@ -243,6 +263,83 @@ export default function StorageDiscovery({ onBookLogisticsRedirect }) {
           </div>
         </div>
       </div>
+
+      {/* City / Village Origin Control Bar */}
+      <div className="bg-gradient-to-r from-emerald-900 via-slate-900 to-teal-950 text-white p-4 sm:p-5 rounded-2xl shadow-md border border-emerald-800/40">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+                  Radar Center Location:
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                  {activeLocation.type === 'village' ? '🌾 Village' : '🏙️ City'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-display font-extrabold text-lg text-white">
+                  {activeLocation.name}
+                </span>
+                <span className="text-xs text-slate-300">({activeLocation.district})</span>
+                <button
+                  onClick={() => setShowVillageModal(true)}
+                  className="ml-2 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  Change City / Village
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Village / City Jump Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full lg:max-w-xl">
+            <span className="text-xs text-slate-400 whitespace-nowrap font-medium mr-1">Quick Jump:</span>
+            {[
+              { name: 'Devanahalli Village Hub', short: '🌾 Devanahalli', district: 'Bengaluru', lat: 13.2483, lng: 77.7126, type: 'village' },
+              { name: 'Hoskote Farmer Village', short: '🌾 Hoskote', district: 'Bengaluru', lat: 13.0712, lng: 77.7981, type: 'village' },
+              { name: 'Malur Farm Village', short: '🌾 Malur', district: 'Kolar', lat: 13.0048, lng: 77.9405, type: 'village' },
+              { name: 'Srinivaspur Mango Cluster', short: '🌾 Srinivaspur', district: 'Kolar', lat: 13.3364, lng: 78.2144, type: 'village' },
+              { name: 'Maddur Jaggery Village', short: '🌾 Maddur', district: 'Mandya', lat: 12.5844, lng: 77.0456, type: 'village' },
+              { name: 'Nanjangud Banana Village', short: '🌾 Nanjangud', district: 'Mysuru', lat: 12.1197, lng: 76.6806, type: 'village' },
+              { name: 'Tiptur Coconut Village', short: '🌾 Tiptur', district: 'Tumkur', lat: 13.2625, lng: 76.4789, type: 'village' },
+              { name: 'Byadgi Red Chilli Village', short: '🌾 Byadgi', district: 'Haveri', lat: 14.6811, lng: 75.4917, type: 'village' },
+              { name: 'Sindhanur Sona Masoori Village', short: '🌾 Sindhanur', district: 'Raichur', lat: 15.7667, lng: 76.7667, type: 'village' },
+              { name: 'Belagavi Central City', short: '🏙️ Belagavi', district: 'Belagavi', lat: 15.8497, lng: 74.4977, type: 'city' }
+            ].map((loc) => (
+              <button
+                key={loc.name}
+                onClick={() => {
+                  setActiveLocation(loc);
+                  if (loc.district) setSelectedDistrict(loc.district);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  activeLocation.name === loc.name
+                    ? 'bg-emerald-500 text-white shadow-xs font-bold'
+                    : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                }`}
+              >
+                {loc.short}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Google Map Radar Showing All Nearby Storages */}
+      <StorageMap
+        farmerLat={activeLocation.lat}
+        farmerLng={activeLocation.lng}
+        radiusKm={selectedRadius}
+        storages={storages}
+        onSelectStorage={(facility) => {
+          setActiveFacility(facility);
+          setBookingResult(null);
+        }}
+      />
 
       {/* Storage Facilities Grid */}
       <div className="space-y-4">
@@ -647,6 +744,17 @@ export default function StorageDiscovery({ onBookLogisticsRedirect }) {
           </div>
         </div>
       )}
+
+      {/* City & Village Selection Modal */}
+      <CityVillageSelectorModal
+        isOpen={showVillageModal}
+        onClose={() => setShowVillageModal(false)}
+        currentLocation={activeLocation.name}
+        onLocationSaved={(loc) => {
+          setActiveLocation(loc);
+          if (loc.district) setSelectedDistrict(loc.district);
+        }}
+      />
     </div>
   );
 }

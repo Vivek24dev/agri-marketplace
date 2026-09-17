@@ -3,7 +3,8 @@ import { useAuthStore } from '../store/authStore';
 import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import PostCard from '../components/PostCard';
-import { COMMON_CROPS } from '../utils/helpers';
+import CityVillageSelectorModal from '../components/CityVillageSelectorModal';
+import { COMMON_CROPS, KARNATAKA_CITIES_AND_VILLAGES } from '../utils/helpers';
 import {
   ShoppingBag,
   ListPlus,
@@ -12,7 +13,10 @@ import {
   PlusCircle,
   CheckCircle2,
   Filter,
-  Sparkles
+  Sparkles,
+  MapPin,
+  Building2,
+  Sprout
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -24,6 +28,8 @@ export default function BuyerDashboard() {
   const [farmerPosts, setFarmerPosts] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(false);
   const [selectedCropFilter, setSelectedCropFilter] = useState('');
+  const [selectedLocationFilter, setSelectedLocationFilter] = useState('');
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   // Requirement Form State
   const [reqTitle, setReqTitle] = useState('');
@@ -39,11 +45,12 @@ export default function BuyerDashboard() {
   const [loadingMyReqs, setLoadingMyReqs] = useState(false);
 
   // Load Farmer Listings Feed
-  const fetchFarmerPosts = async (cropFilter = selectedCropFilter) => {
+  const fetchFarmerPosts = async (cropFilter = selectedCropFilter, locFilter = selectedLocationFilter) => {
     setLoadingFeed(true);
     try {
       const params = { userType: 'buyer' };
       if (cropFilter) params.cropType = cropFilter;
+      if (locFilter) params.city_or_village = locFilter;
       const res = await api.get('/posts', { params });
       setFarmerPosts(res.data || []);
     } catch (err) {
@@ -141,12 +148,21 @@ export default function BuyerDashboard() {
         {/* Header Bar */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="text-xs font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full border border-purple-200">
                 Buyer Procurement Hub
               </span>
-              <span className="text-xs text-slate-500 font-medium">
-                Procuring for: {user?.district || 'Bengaluru'}
+              <span className="text-xs text-slate-600 font-medium flex items-center gap-1.5">
+                Procuring for:
+                <button
+                  onClick={() => setShowLocationModal(true)}
+                  className="inline-flex items-center gap-1 font-bold text-purple-900 bg-purple-100 hover:bg-purple-200 px-2.5 py-0.5 rounded-full border border-purple-200 transition-colors cursor-pointer"
+                  title="Change your procurement city/village"
+                >
+                  <MapPin className="w-3 h-3 text-purple-600" />
+                  {user?.city_or_village || user?.district || 'Bengaluru'}
+                  <span className="text-[10px] text-purple-700 underline font-extrabold ml-0.5">Change</span>
+                </button>
               </span>
             </div>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
@@ -200,15 +216,51 @@ export default function BuyerDashboard() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* City/Village Filter Dropdown */}
+                  <div className="relative">
+                    <select
+                      value={selectedLocationFilter}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSelectedLocationFilter(val);
+                        fetchFarmerPosts(selectedCropFilter, val);
+                      }}
+                      className="text-xs pl-7 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer max-w-[170px] truncate"
+                    >
+                      <option value="">All Cities & Villages</option>
+                      {user?.city_or_village && (
+                        <option value={user.city_or_village}>
+                          📍 My Area ({user.city_or_village})
+                        </option>
+                      )}
+                      <optgroup label="Farming Villages & Clusters">
+                        {KARNATAKA_CITIES_AND_VILLAGES.filter(l => l.type === 'village').map(v => (
+                          <option key={v.name} value={v.name}>
+                            🌾 {v.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Cities & APMC Hubs">
+                        {KARNATAKA_CITIES_AND_VILLAGES.filter(l => l.type === 'city').map(c => (
+                          <option key={c.name} value={c.name}>
+                            🏙️ {c.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
+                    <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-2 top-2 pointer-events-none" />
+                  </div>
+
+                  {/* Crop Filter */}
                   <select
                     value={selectedCropFilter}
                     onChange={(e) => {
                       const val = e.target.value;
                       setSelectedCropFilter(val);
-                      fetchFarmerPosts(val);
+                      fetchFarmerPosts(val, selectedLocationFilter);
                     }}
-                    className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   >
                     <option value="">All Crop Types</option>
                     {COMMON_CROPS.map((c) => (
@@ -218,21 +270,22 @@ export default function BuyerDashboard() {
                     ))}
                   </select>
 
-                  {selectedCropFilter && (
+                  {(selectedCropFilter || selectedLocationFilter) && (
                     <button
                       onClick={() => {
                         setSelectedCropFilter('');
-                        fetchFarmerPosts('');
+                        setSelectedLocationFilter('');
+                        fetchFarmerPosts('', '');
                       }}
-                      className="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold"
+                      className="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold cursor-pointer"
                     >
                       Clear
                     </button>
                   )}
 
                   <button
-                    onClick={() => fetchFarmerPosts(selectedCropFilter)}
-                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600"
+                    onClick={() => fetchFarmerPosts(selectedCropFilter, selectedLocationFilter)}
+                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 cursor-pointer"
                     title="Refresh feed"
                   >
                     <RefreshCw className={`w-4 h-4 ${loadingFeed ? 'animate-spin' : ''}`} />
@@ -426,6 +479,15 @@ export default function BuyerDashboard() {
           </div>
         )}
       </main>
+
+      {/* Location Selector Modal */}
+      <CityVillageSelectorModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSelected={(loc) => {
+          fetchFarmerPosts(selectedCropFilter, loc.name);
+        }}
+      />
     </div>
   );
 }

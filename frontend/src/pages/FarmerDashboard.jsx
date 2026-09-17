@@ -9,6 +9,7 @@ import PriceDisplay from '../components/PriceDisplay';
 import PricePredictor from '../components/PricePredictor';
 import LogisticsBooking from '../components/LogisticsBooking';
 import StorageDiscovery from '../components/StorageDiscovery';
+import CityVillageSelectorModal from '../components/CityVillageSelectorModal';
 import { COMMON_CROPS, KARNATAKA_DISTRICTS } from '../utils/helpers';
 import {
   ShoppingBag,
@@ -23,13 +24,15 @@ import {
   CheckCircle2,
   RefreshCw,
   Search,
-  Filter
+  Filter,
+  MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function FarmerDashboard() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('requirements'); // 'requirements', 'my-posts', 'fpo', 'prices'
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   // Tab 1: Buyer Requirements Feed
   const [buyerPosts, setBuyerPosts] = useState([]);
@@ -134,7 +137,9 @@ export default function FarmerDashboard() {
         pricePerUnit: Number(postPrice),
         grade: postGrade || 'A',
         imageUrl: postImage || null,
-        userType: 'farmer'
+        userType: 'farmer',
+        city_or_village: user?.city_or_village || 'Devanahalli Village Hub',
+        district: user?.district || 'Bengaluru'
       });
 
       confetti({
@@ -225,12 +230,21 @@ export default function FarmerDashboard() {
         {/* Welcome Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
                 Farmer Workspace
               </span>
-              <span className="text-xs text-slate-500 font-medium">
-                District: {user?.district || 'Bengaluru'}
+              <span className="text-xs text-slate-600 font-medium flex items-center gap-1.5">
+                🌾 Farm Location:
+                <button
+                  onClick={() => setShowLocationModal(true)}
+                  className="inline-flex items-center gap-1 font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-300/80 transition-colors cursor-pointer"
+                  title="Click to choose or change your farm village or city"
+                >
+                  <MapPin className="w-3 h-3 text-emerald-600" />
+                  {user?.city_or_village || user?.district || 'Devanahalli Village Hub'}
+                  <span className="text-[10px] text-emerald-700 underline font-extrabold ml-0.5">Change</span>
+                </button>
               </span>
             </div>
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
@@ -753,17 +767,37 @@ export default function FarmerDashboard() {
         {/* TAB 6: LOGISTICS & VEHICLE TRANSPORT */}
         {activeTab === 'logistics' && (
           <div className="space-y-6">
-            <LogisticsBooking />
+            <LogisticsBooking
+              defaultOrigin={{
+                name: user?.city_or_village || user?.district || 'Devanahalli Village Hub',
+                lat: user?.lat || 13.2483,
+                lng: user?.lng || 77.7126
+              }}
+            />
           </div>
         )}
 
         {/* TAB 7: NEARBY COLD STORAGE & WAREHOUSE DISCOVERY */}
         {activeTab === 'storage' && (
           <div className="space-y-6">
-            <StorageDiscovery onBookLogisticsRedirect={() => setActiveTab('logistics')} />
+            <StorageDiscovery
+              farmerLocation={{
+                city_or_village: user?.city_or_village || 'Devanahalli Village Hub',
+                district: user?.district || 'Bengaluru',
+                lat: user?.lat || 13.2483,
+                lng: user?.lng || 77.7126
+              }}
+              onBookLogisticsRedirect={() => setActiveTab('logistics')}
+            />
           </div>
         )}
       </main>
+
+      {/* City or Village Selector Modal */}
+      <CityVillageSelectorModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+      />
     </div>
   );
 }

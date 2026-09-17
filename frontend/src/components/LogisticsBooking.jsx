@@ -3,6 +3,7 @@ import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
 import { COMMON_CROPS, KARNATAKA_DISTRICTS, formatCurrency } from '../utils/helpers';
 import CarrierTrackingModal from './CarrierTrackingModal';
+import MapLocationPicker from './MapLocationPicker';
 import confetti from 'canvas-confetti';
 import {
   Truck,
@@ -59,6 +60,10 @@ export default function LogisticsBooking() {
   const [selectedDelivery, setSelectedDelivery] = useState(PRESET_DELIVERY_DESTINATIONS[0]);
   const [customDelivery, setCustomDelivery] = useState('');
   const [useCustomDelivery, setUseCustomDelivery] = useState(false);
+
+  // Mode: 'map' (Google Map interactive pin selection) or 'dropdown'
+  const [pickupMode, setPickupMode] = useState('map');
+  const [deliveryMode, setDeliveryMode] = useState('map');
 
   const [cropType, setCropType] = useState('Tomato');
   const [quantityKg, setQuantityKg] = useState('250');
@@ -267,86 +272,178 @@ export default function LogisticsBooking() {
 
           <div className="space-y-4">
             {/* Pickup Location */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                  Pickup Origin (Farm Gate)
+            <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-emerald-600" />
+                  Pickup Origin (Farmer Gate)
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setUseCustomPickup(!useCustomPickup)}
-                  className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700"
-                >
-                  {useCustomPickup ? 'Select Preset Farm Hub' : '+ Custom Address'}
-                </button>
+
+                {/* Mode Selector */}
+                <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setPickupMode('map')}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      pickupMode === 'map'
+                        ? 'bg-emerald-600 text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🗺️ Google Map Pin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPickupMode('dropdown')}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      pickupMode === 'dropdown'
+                        ? 'bg-emerald-600 text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    📋 Dropdown / Text
+                  </button>
+                </div>
               </div>
 
-              {useCustomPickup ? (
-                <input
-                  type="text"
-                  placeholder="e.g. Survey No. 42, Hoskote Rural, Bengaluru"
-                  value={customPickup}
-                  onChange={(e) => setCustomPickup(e.target.value)}
-                  className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              {pickupMode === 'map' ? (
+                <MapLocationPicker
+                  title="Click or drag pin to mark your Farm Gate"
+                  initialLat={selectedPickup.lat}
+                  initialLng={selectedPickup.lng}
+                  initialAddress={useCustomPickup ? customPickup : selectedPickup.name}
+                  presets={PRESET_PICKUP_HUBS}
+                  pinType="pickup"
+                  onLocationSelect={({ lat, lng, address }) => {
+                    setSelectedPickup({ name: address, lat, lng, district: 'Custom Farm' });
+                    setCustomPickup(address);
+                    setUseCustomPickup(true);
+                  }}
                 />
               ) : (
-                <select
-                  value={selectedPickup.name}
-                  onChange={(e) => {
-                    const found = PRESET_PICKUP_HUBS.find(h => h.name === e.target.value);
-                    if (found) setSelectedPickup(found);
-                  }}
-                  className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                >
-                  {PRESET_PICKUP_HUBS.map((hub) => (
-                    <option key={hub.name} value={hub.name}>
-                      📍 {hub.name} ({hub.district})
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <div className="flex justify-end mb-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setUseCustomPickup(!useCustomPickup)}
+                      className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700"
+                    >
+                      {useCustomPickup ? 'Select Preset Farm Hub' : '+ Custom Address'}
+                    </button>
+                  </div>
+                  {useCustomPickup ? (
+                    <input
+                      type="text"
+                      placeholder="e.g. Survey No. 42, Hoskote Rural, Bengaluru"
+                      value={customPickup}
+                      onChange={(e) => setCustomPickup(e.target.value)}
+                      className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    />
+                  ) : (
+                    <select
+                      value={selectedPickup.name}
+                      onChange={(e) => {
+                        const found = PRESET_PICKUP_HUBS.find(h => h.name === e.target.value);
+                        if (found) setSelectedPickup(found);
+                      }}
+                      className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    >
+                      {PRESET_PICKUP_HUBS.map((hub) => (
+                        <option key={hub.name} value={hub.name}>
+                          📍 {hub.name} ({hub.district})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               )}
             </div>
 
             {/* Delivery Destination */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Navigation className="w-3.5 h-3.5 text-blue-600" />
+            <div className="bg-slate-50/70 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <Navigation className="w-4 h-4 text-blue-600" />
                   Delivery Destination (Mandi / Storage)
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setUseCustomDelivery(!useCustomDelivery)}
-                  className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700"
-                >
-                  {useCustomDelivery ? 'Select APMC Mandi' : '+ Custom Address'}
-                </button>
+
+                {/* Mode Selector */}
+                <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMode('map')}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      deliveryMode === 'map'
+                        ? 'bg-blue-600 text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🗺️ Google Map Pin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryMode('dropdown')}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      deliveryMode === 'dropdown'
+                        ? 'bg-blue-600 text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    📋 Dropdown / Text
+                  </button>
+                </div>
               </div>
 
-              {useCustomDelivery ? (
-                <input
-                  type="text"
-                  placeholder="e.g. Shop 45, APMC Yard Gate 2"
-                  value={customDelivery}
-                  onChange={(e) => setCustomDelivery(e.target.value)}
-                  className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              {deliveryMode === 'map' ? (
+                <MapLocationPicker
+                  title="Click or drag pin to mark Mandi or Storage facility"
+                  initialLat={selectedDelivery.lat}
+                  initialLng={selectedDelivery.lng}
+                  initialAddress={useCustomDelivery ? customDelivery : selectedDelivery.name}
+                  presets={PRESET_DELIVERY_DESTINATIONS}
+                  pinType="delivery"
+                  onLocationSelect={({ lat, lng, address }) => {
+                    setSelectedDelivery({ name: address, lat, lng, district: 'Custom Destination' });
+                    setCustomDelivery(address);
+                    setUseCustomDelivery(true);
+                  }}
                 />
               ) : (
-                <select
-                  value={selectedDelivery.name}
-                  onChange={(e) => {
-                    const found = PRESET_DELIVERY_DESTINATIONS.find(d => d.name === e.target.value);
-                    if (found) setSelectedDelivery(found);
-                  }}
-                  className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                >
-                  {PRESET_DELIVERY_DESTINATIONS.map((dest) => (
-                    <option key={dest.name} value={dest.name}>
-                      🏁 {dest.name} ({dest.district})
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <div className="flex justify-end mb-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setUseCustomDelivery(!useCustomDelivery)}
+                      className="text-[11px] font-semibold text-blue-600 hover:text-blue-700"
+                    >
+                      {useCustomDelivery ? 'Select APMC Mandi' : '+ Custom Address'}
+                    </button>
+                  </div>
+                  {useCustomDelivery ? (
+                    <input
+                      type="text"
+                      placeholder="e.g. Shop 45, APMC Yard Gate 2"
+                      value={customDelivery}
+                      onChange={(e) => setCustomDelivery(e.target.value)}
+                      className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
+                  ) : (
+                    <select
+                      value={selectedDelivery.name}
+                      onChange={(e) => {
+                        const found = PRESET_DELIVERY_DESTINATIONS.find(d => d.name === e.target.value);
+                        if (found) setSelectedDelivery(found);
+                      }}
+                      className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    >
+                      {PRESET_DELIVERY_DESTINATIONS.map((dest) => (
+                        <option key={dest.name} value={dest.name}>
+                          🏁 {dest.name} ({dest.district})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               )}
             </div>
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { Sprout, User, Mail, Phone, Lock, MapPin, ArrowRight, ShieldCheck, ShoppingCart } from 'lucide-react';
-import { KARNATAKA_DISTRICTS } from '../utils/helpers';
+import { Sprout, User, Mail, Phone, Lock, MapPin, ArrowRight, ShieldCheck, ShoppingCart, Home } from 'lucide-react';
+import { KARNATAKA_DISTRICTS, KARNATAKA_CITIES_AND_VILLAGES } from '../utils/helpers';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -15,6 +15,10 @@ export default function Signup() {
     phone: ''
   });
 
+  const [selectedCityOrVillage, setSelectedCityOrVillage] = useState('Devanahalli Village Hub');
+  const [isCustomVillage, setIsCustomVillage] = useState(false);
+  const [customVillageName, setCustomVillageName] = useState('');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -24,6 +28,13 @@ export default function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'district') {
+      const matching = KARNATAKA_CITIES_AND_VILLAGES.filter(c => c.district === value);
+      if (matching.length > 0) {
+        setSelectedCityOrVillage(matching[0].name);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -40,6 +51,17 @@ export default function Signup() {
       return;
     }
 
+    const chosenLocation = !isCustomVillage
+      ? KARNATAKA_CITIES_AND_VILLAGES.find(c => c.name === selectedCityOrVillage)
+      : null;
+
+    const cityOrVillageName = isCustomVillage
+      ? customVillageName.trim() || `${formData.district} Area`
+      : selectedCityOrVillage;
+
+    const lat = chosenLocation?.lat || 12.9716;
+    const lng = chosenLocation?.lng || 77.5946;
+
     setLoading(true);
 
     try {
@@ -49,6 +71,9 @@ export default function Signup() {
         password: formData.password,
         userType: formData.userType,
         district: formData.district,
+        city_or_village: cityOrVillageName,
+        lat,
+        lng,
         phone: formData.phone
       });
 
@@ -205,6 +230,55 @@ export default function Signup() {
                 </select>
                 <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               </div>
+            </div>
+
+            {/* City or Village Selection */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  {formData.userType === 'farmer' ? 'Farm Village or Town' : 'Business City or Hub'}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomVillage(!isCustomVillage)}
+                  className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold underline cursor-pointer"
+                >
+                  {isCustomVillage ? 'Choose from list' : '+ Custom Village / Town'}
+                </button>
+              </div>
+
+              {isCustomVillage ? (
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={customVillageName}
+                    onChange={(e) => setCustomVillageName(e.target.value)}
+                    placeholder="e.g. Doddaballapur Hobli, Rampura"
+                    className="w-full text-sm pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 focus:bg-white"
+                  />
+                  <Home className="w-4 h-4 text-emerald-600 absolute left-3.5 top-3" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <select
+                    value={selectedCityOrVillage}
+                    onChange={(e) => setSelectedCityOrVillage(e.target.value)}
+                    className="w-full text-sm pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 focus:bg-white"
+                  >
+                    {KARNATAKA_CITIES_AND_VILLAGES.filter((c) => c.district === formData.district).map((loc) => (
+                      <option key={loc.name} value={loc.name}>
+                        {loc.type === 'village' ? '🌾 Village: ' : '🏙️ City: '}
+                        {loc.name}
+                      </option>
+                    ))}
+                    {KARNATAKA_CITIES_AND_VILLAGES.filter((c) => c.district === formData.district).length === 0 && (
+                      <option value={`${formData.district} Center`}>{formData.district} Center</option>
+                    )}
+                  </select>
+                  <Home className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                </div>
+              )}
             </div>
 
             {/* Password & Confirm */}

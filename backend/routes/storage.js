@@ -28,15 +28,18 @@ router.get('/nearby', async (req, res) => {
       storage_type,
       min_capacity_kg,
       max_price_per_day,
-      district
+      district,
+      city_or_village
     } = req.query;
 
-    const farmerLat = Number(latitude) || 12.9716;
-    const farmerLng = Number(longitude) || 77.5946;
-    const radius = Number(radius_km) || 30; // default 30km coverage
+    const farmerLat = Number(latitude) || 13.2483;
+    const farmerLng = Number(longitude) || 77.7126;
+    const isAllRadius = radius_km === 'all' || Number(radius_km) >= 999;
+    const radius = isAllRadius ? 9999 : (Number(radius_km) || 30);
 
     const allStorages = db.getStorageLocations({
       district,
+      city_or_village,
       location_type: storage_type,
       min_capacity: min_capacity_kg,
       max_price: max_price_per_day
@@ -55,14 +58,14 @@ router.get('/nearby', async (req, res) => {
     let filtered = withDistances.filter(s => s.distanceKm <= radius);
     if (filtered.length === 0) {
       // Return closest storages so farmer always has options
-      filtered = withDistances.slice(0, 4);
+      filtered = withDistances.slice(0, 6);
     }
 
     filtered.sort((a, b) => a.distanceKm - b.distanceKm);
 
     return res.status(200).json({
       farmerCoordinates: { lat: farmerLat, lng: farmerLng },
-      radiusKm: radius,
+      radiusKm: isAllRadius ? 'all' : radius,
       count: filtered.length,
       locations: filtered
     });
