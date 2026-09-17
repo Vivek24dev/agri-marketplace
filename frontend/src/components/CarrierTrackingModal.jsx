@@ -89,7 +89,7 @@ export default function CarrierTrackingModal({ bookingId, onClose, onStatusUpdat
     ? 100
     : Math.max(10, Math.min(95, Math.round(((tracking.distanceKm - tracking.distanceRemainingKm) / (tracking.distanceKm || 1)) * 100)));
 
-  const waMessage = `Hello ${tracking.carrier.name}, I am tracking Booking #${bookingId} (${tracking.cropType}, ${tracking.quantityKg}kg) on Agro-Market. What is your current location?`;
+  const waMessage = `Hello ${tracking.carrier.name}, I am tracking Booking #${bookingId} (${tracking.cropType}, ${tracking.quantityKg}kg) on Agro-Market Beta. What is your current location?`;
   const waLink = generateWhatsAppLink(tracking.carrier.phone, waMessage);
 
   return (

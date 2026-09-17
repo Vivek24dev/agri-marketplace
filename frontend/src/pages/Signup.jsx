@@ -94,8 +94,9 @@ export default function Signup() {
         <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-lg shadow-emerald-600/20 mb-3">
           <Sprout className="w-8 h-8" />
         </div>
-        <h2 className="font-display font-extrabold text-3xl tracking-tight text-slate-900">
-          Join Agro<span className="text-emerald-600">-Market</span>
+        <h2 className="font-display font-extrabold text-3xl tracking-tight text-slate-900 flex items-center justify-center gap-2">
+          <span>Join Agro<span className="text-emerald-600">-Market</span></span>
+          <span className="text-xs font-extrabold uppercase px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md border border-emerald-300">Beta</span>
         </h2>
         <p className="mt-1 text-sm text-slate-600">
           Connecting rural farmers directly with verified buyers
