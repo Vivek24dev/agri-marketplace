@@ -70,7 +70,7 @@ export default function Signup() {
           <Sprout className="w-8 h-8" />
         </div>
         <h2 className="font-display font-extrabold text-3xl tracking-tight text-slate-900">
-          Join Kisan<span className="text-emerald-600">Setu</span>
+          Join Agro<span className="text-emerald-600">-Market</span>
         </h2>
         <p className="mt-1 text-sm text-slate-600">
           Connecting rural farmers directly with verified buyers

@@ -1,4 +1,4 @@
-# 🌾 KisanSetu - SIH Agri-Marketplace & FPO Aggregation Platform
+# 🌾 Agro-Market - SIH Agri-Marketplace & FPO Aggregation Platform
 
 > **Smart India Hackathon (SIH) Technical Deliverable**  
 > Direct Farmer-to-Buyer Agricultural Marketplace with Computer Vision Produce Quality Grading, FPO Bulk Volume Aggregation, and Real-Time Mandi Price Benchmarks.

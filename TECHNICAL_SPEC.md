@@ -1,6 +1,6 @@
-# 🏗️ Technical Specification - SIH Agri-Marketplace
+# 🏗️ Technical Specification - Agro-Market
 
-This file preserves the official architecture and technical specification used to build the KisanSetu platform.
+This file preserves the official architecture and technical specification used to build the Agro-Market platform.
 
 ## Database Design
 - `users`: id, name, email, password, user_type, district, phone, whatsapp_number, profile_image_url, is_verified, created_at, updated_at

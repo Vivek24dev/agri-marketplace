@@ -7,8 +7,8 @@ export default function PostCard({ post, isOwner, onDealingDone }) {
 
   // WhatsApp negotiation template
   const defaultMessage = isProduce
-    ? `Hello ${post.user_name || 'Farmer'}, I saw your listing for "${post.title}" (${post.quantity}kg ${post.crop_type} at ₹${post.price_per_unit}/kg) on KisanSetu. I am interested in purchasing.`
-    : `Hello ${post.user_name || 'Buyer'}, I saw your requirement for "${post.title}" (${post.quantity}kg ${post.crop_type} at ₹${post.price_per_unit}/kg) on KisanSetu. I have stock available and can supply.`;
+    ? `Hello ${post.user_name || 'Farmer'}, I saw your listing for "${post.title}" (${post.quantity}kg ${post.crop_type} at ₹${post.price_per_unit}/kg) on Agro-Market. I am interested in purchasing.`
+    : `Hello ${post.user_name || 'Buyer'}, I saw your requirement for "${post.title}" (${post.quantity}kg ${post.crop_type} at ₹${post.price_per_unit}/kg) on Agro-Market. I have stock available and can supply.`;
 
   const waLink = generateWhatsAppLink(post.whatsapp_number || post.phone, defaultMessage);
 

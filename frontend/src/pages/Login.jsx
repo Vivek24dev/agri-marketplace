@@ -70,7 +70,7 @@ export default function Login() {
           <Sprout className="w-8 h-8" />
         </div>
         <h2 className="font-display font-extrabold text-3xl tracking-tight text-slate-900">
-          Welcome to Kisan<span className="text-emerald-600">Setu</span>
+          Welcome to Agro<span className="text-emerald-600">-Market</span>
         </h2>
         <p className="mt-1 text-sm text-slate-600">
           Direct Farmer & Buyer Marketplace &bull; SIH Edition

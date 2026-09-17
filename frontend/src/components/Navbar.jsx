@@ -52,7 +52,7 @@ export default function Navbar() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display font-extrabold text-xl tracking-tight text-slate-900">
-                  Kisan<span className="text-emerald-600">Setu</span>
+                  Agro<span className="text-emerald-600">-Market</span>
                 </span>
                 <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-200/60">
                   SIH Edition

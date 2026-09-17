@@ -1,4 +1,4 @@
-# 🌾 KisanSetu - Complete System Documentation
+# 🌾 Agro-Market - Complete System Documentation
 
 ## Architecture & Data Flow
 
@@ -61,7 +61,7 @@
 ## User Flows
 
 ### 1. Farmer Produce Flow with Computer Vision
-1. Farmer logs into KisanSetu using email/password or 1-click Demo.
+1. Farmer logs into Agro-Market using email/password or 1-click Demo.
 2. Navigates to **Buyer Requirements** tab.
 3. Fills in produce details (Crop: Tomato, Qty: 50kg, Price: ₹25/kg) and attaches produce photo.
 4. Computer Vision engine performs quality inference, analyzing blemish score, color ripeness, and sizing standard, awarding a verifiable **Grade A** badge.

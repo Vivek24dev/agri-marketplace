@@ -9,7 +9,7 @@ export function generateWhatsAppLink(phone, message) {
   if (cleanNumber.length === 10) {
     cleanNumber = '91' + cleanNumber;
   }
-  const encodedText = encodeURIComponent(message || 'Hello, I am contacting you regarding your listing on KisanSetu.');
+  const encodedText = encodeURIComponent(message || 'Hello, I am contacting you regarding your listing on Agro-Market.');
   return `https://wa.me/${cleanNumber}?text=${encodedText}`;
 }
 
