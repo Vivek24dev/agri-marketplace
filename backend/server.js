@@ -11,6 +11,8 @@ const postsRoutes = require('./routes/posts');
 const fpoRoutes = require('./routes/fpo');
 const pricesRoutes = require('./routes/prices');
 const adminRoutes = require('./routes/admin');
+const logisticsRoutes = require('./routes/logistics');
+const storageRoutes = require('./routes/storage');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,6 +42,8 @@ app.use('/api/posts', postsRoutes);
 app.use('/api/fpo', fpoRoutes);
 app.use('/api', pricesRoutes); // Provides /api/prices, /api/crops, /api/districts
 app.use('/api/admin', adminRoutes);
+app.use('/api/logistics', logisticsRoutes);
+app.use('/api/storage', storageRoutes);
 
 // Cron Job: Simulate mandi market fluctuations every 6 hours
 cron.schedule('0 */6 * * *', async () => {

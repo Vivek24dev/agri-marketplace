@@ -7,6 +7,8 @@ import FPOCard from '../components/FPOCard';
 import CVUpload from '../components/CVUpload';
 import PriceDisplay from '../components/PriceDisplay';
 import PricePredictor from '../components/PricePredictor';
+import LogisticsBooking from '../components/LogisticsBooking';
+import StorageDiscovery from '../components/StorageDiscovery';
 import { COMMON_CROPS, KARNATAKA_DISTRICTS } from '../utils/helpers';
 import {
   ShoppingBag,
@@ -14,6 +16,8 @@ import {
   Users,
   TrendingUp,
   LineChart,
+  Truck,
+  Store,
   PlusCircle,
   Sparkles,
   CheckCircle2,
@@ -297,6 +301,30 @@ export default function FarmerDashboard() {
             >
               <LineChart className="w-4 h-4 text-emerald-600" />
               Price Predictor
+            </button>
+
+            <button
+              onClick={() => setActiveTab('logistics')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+                activeTab === 'logistics'
+                  ? 'bg-white text-emerald-800 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Truck className="w-4 h-4 text-emerald-600" />
+              🚚 Logistics
+            </button>
+
+            <button
+              onClick={() => setActiveTab('storage')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+                activeTab === 'storage'
+                  ? 'bg-white text-emerald-800 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Store className="w-4 h-4 text-emerald-600" />
+              🏪 Storage
             </button>
           </div>
         </div>
@@ -719,6 +747,20 @@ export default function FarmerDashboard() {
         {activeTab === 'predictor' && (
           <div className="space-y-6">
             <PricePredictor />
+          </div>
+        )}
+
+        {/* TAB 6: LOGISTICS & VEHICLE TRANSPORT */}
+        {activeTab === 'logistics' && (
+          <div className="space-y-6">
+            <LogisticsBooking />
+          </div>
+        )}
+
+        {/* TAB 7: NEARBY COLD STORAGE & WAREHOUSE DISCOVERY */}
+        {activeTab === 'storage' && (
+          <div className="space-y-6">
+            <StorageDiscovery onBookLogisticsRedirect={() => setActiveTab('logistics')} />
           </div>
         )}
       </main>

@@ -227,6 +227,386 @@ const INITIAL_FPO_JOINS = [
   { id: 3, fpo_id: 2, farmer_id: 4, quantity_contributed: 150.0, created_at: new Date('2026-09-14T14:35:00Z').toISOString() }
 ];
 
+const INITIAL_CARRIERS = [
+  {
+    id: 1,
+    name: 'FastTransport Agro Cargo',
+    phone: '9876543220',
+    email: 'contact@fasttransport.in',
+    vehicle_type: 'truck',
+    vehicle_model: 'Tata 407 Heavy Truck',
+    capacity_kg: 2500,
+    base_rate: 350.0,
+    rate_per_km: 18.0,
+    base_location_lat: 12.9716,
+    base_location_lng: 77.5946,
+    base_district: 'Bengaluru',
+    service_radius_km: 60,
+    rating: 4.8,
+    total_deliveries: 342,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 40
+  },
+  {
+    id: 2,
+    name: 'KisanExpress Pickups',
+    phone: '9876543221',
+    email: 'kisanexpress@transport.com',
+    vehicle_type: 'pickup',
+    vehicle_model: 'Mahindra Bolero Maxi Truck Plus',
+    capacity_kg: 1200,
+    base_rate: 220.0,
+    rate_per_km: 14.0,
+    base_location_lat: 13.1362,
+    base_location_lng: 78.1291,
+    base_district: 'Kolar',
+    service_radius_km: 45,
+    rating: 4.9,
+    total_deliveries: 512,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 45
+  },
+  {
+    id: 3,
+    name: 'GreenHaul Eco-Mini Logistics',
+    phone: '9876543222',
+    email: 'greenhaul@cleanagro.in',
+    vehicle_type: 'mini_truck',
+    vehicle_model: 'Tata Ace Gold EV / Diesel',
+    capacity_kg: 750,
+    base_rate: 150.0,
+    rate_per_km: 11.0,
+    base_location_lat: 12.2958,
+    base_location_lng: 76.6394,
+    base_district: 'Mysuru',
+    service_radius_km: 35,
+    rating: 4.7,
+    total_deliveries: 218,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 38
+  },
+  {
+    id: 4,
+    name: 'RaithaBandhu E-Loaders',
+    phone: '9876543223',
+    email: 'support@raithabandhutransport.com',
+    vehicle_type: 'e_loader',
+    vehicle_model: 'Piaggio Ape E-Xtra Cargo',
+    capacity_kg: 500,
+    base_rate: 100.0,
+    rate_per_km: 8.5,
+    base_location_lat: 13.3409,
+    base_location_lng: 77.1010,
+    base_district: 'Tumkur',
+    service_radius_km: 25,
+    rating: 4.6,
+    total_deliveries: 184,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 32
+  },
+  {
+    id: 5,
+    name: 'Belagavi Agro Freight Carriers',
+    phone: '9876543224',
+    email: 'belagavifreight@logistics.com',
+    vehicle_type: 'truck',
+    vehicle_model: 'Ashok Leyland Ecomet 1214',
+    capacity_kg: 5000,
+    base_rate: 600.0,
+    rate_per_km: 24.0,
+    base_location_lat: 15.8497,
+    base_location_lng: 74.4977,
+    base_district: 'Belagavi',
+    service_radius_km: 100,
+    rating: 4.85,
+    total_deliveries: 620,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 42
+  },
+  {
+    id: 6,
+    name: 'Mandya Rural Speedy Transport',
+    phone: '9876543225',
+    email: 'mandyaexpress@karnataka.in',
+    vehicle_type: 'pickup',
+    vehicle_model: 'Ashok Leyland DOST Strong',
+    capacity_kg: 1500,
+    base_rate: 250.0,
+    rate_per_km: 15.0,
+    base_location_lat: 12.5218,
+    base_location_lng: 76.8951,
+    base_district: 'Mandya',
+    service_radius_km: 50,
+    rating: 4.75,
+    total_deliveries: 289,
+    is_active: true,
+    verified_by_admin: true,
+    estimated_speed_kmh: 44
+  }
+];
+
+const INITIAL_STORAGES = [
+  {
+    id: 1,
+    name: 'CoolStore Agri-Cold Logistics Hub',
+    location_type: 'cold_storage',
+    address: '456 Cold Chain Corridor, Yeshwantpur Industrial Area',
+    city: 'Bengaluru',
+    district: 'Bengaluru',
+    latitude: 13.0234,
+    longitude: 77.5456,
+    total_capacity_kg: 20000,
+    current_used_kg: 8500,
+    available_kg: 11500,
+    has_temperature_control: true,
+    has_humidity_control: true,
+    temperature_range_min: 2,
+    temperature_range_max: 6,
+    humidity_range_min: 85,
+    humidity_range_max: 95,
+    price_per_kg_per_day: 0.30,
+    min_storage_days: 2,
+    operating_hours_open: '07:00',
+    operating_hours_close: '21:00',
+    accepts_weekend: true,
+    phone: '9876543230',
+    email: 'bengaluru@coolstore.in',
+    contact_person: 'Ramesh Hegde',
+    rating: 4.8,
+    is_active: true,
+    is_verified: true,
+    special_features: ['24/7 CCTV & Thermal Sensors', 'Ethylene Gas Scrubbing', 'Backup Power Generator', 'Loading Docks for Trucks']
+  },
+  {
+    id: 2,
+    name: 'Kolar District APMC Cold Warehouse',
+    location_type: 'cold_storage',
+    address: 'APMC Market Yard Gate 2, Bangarpet Road',
+    city: 'Kolar',
+    district: 'Kolar',
+    latitude: 13.1362,
+    longitude: 78.1291,
+    total_capacity_kg: 35000,
+    current_used_kg: 14000,
+    available_kg: 21000,
+    has_temperature_control: true,
+    has_humidity_control: true,
+    temperature_range_min: 4,
+    temperature_range_max: 8,
+    humidity_range_min: 80,
+    humidity_range_max: 90,
+    price_per_kg_per_day: 0.25,
+    min_storage_days: 3,
+    operating_hours_open: '06:00',
+    operating_hours_close: '20:00',
+    accepts_weekend: true,
+    phone: '9876543231',
+    email: 'kolar.apmc.storage@gov.in',
+    contact_person: 'Srinivasa Murthy',
+    rating: 4.9,
+    is_active: true,
+    is_verified: true,
+    special_features: ['Govt Subsidized Rate for Farmers', 'Pre-cooling Chambers', 'Forklift Assistance']
+  },
+  {
+    id: 3,
+    name: 'Malur Agri Grain & Produce Warehouse',
+    location_type: 'warehouse',
+    address: 'Plot 18, KIADB Agro Industrial Area, Malur',
+    city: 'Malur',
+    district: 'Kolar',
+    latitude: 13.0048,
+    longitude: 77.9405,
+    total_capacity_kg: 50000,
+    current_used_kg: 22000,
+    available_kg: 28000,
+    has_temperature_control: false,
+    has_humidity_control: true,
+    temperature_range_min: 18,
+    temperature_range_max: 26,
+    humidity_range_min: 50,
+    humidity_range_max: 65,
+    price_per_kg_per_day: 0.18,
+    min_storage_days: 5,
+    operating_hours_open: '08:00',
+    operating_hours_close: '19:00',
+    accepts_weekend: false,
+    phone: '9876543232',
+    email: 'malur.warehouse@agrostorage.com',
+    contact_person: 'Venkatesh Rao',
+    rating: 4.6,
+    is_active: true,
+    is_verified: true,
+    special_features: ['Fumigated Dry Storage', 'Rodent Proofing', 'Electronic Weighbridge']
+  },
+  {
+    id: 4,
+    name: 'Mysuru Agro Cold Chain Terminal',
+    location_type: 'cold_storage',
+    address: 'Bandipalya Market Enclave, Ooty Road',
+    city: 'Mysuru',
+    district: 'Mysuru',
+    latitude: 12.2785,
+    longitude: 76.6715,
+    total_capacity_kg: 18000,
+    current_used_kg: 6200,
+    available_kg: 11800,
+    has_temperature_control: true,
+    has_humidity_control: true,
+    temperature_range_min: 3,
+    temperature_range_max: 7,
+    humidity_range_min: 85,
+    humidity_range_max: 95,
+    price_per_kg_per_day: 0.28,
+    min_storage_days: 2,
+    operating_hours_open: '06:30',
+    operating_hours_close: '21:30',
+    accepts_weekend: true,
+    phone: '9876543233',
+    email: 'mysuru.coldchain@agri.org',
+    contact_person: 'Anand Swamy',
+    rating: 4.75,
+    is_active: true,
+    is_verified: true,
+    special_features: ['Banana & Fruit Ripening Rooms', 'Individual Cold Chambers', 'Solar Powered Backup']
+  },
+  {
+    id: 5,
+    name: 'Tumkur Covered Agro Shed & Depo',
+    location_type: 'covered',
+    address: 'B.H. Road, Industrial Estate, Tumkur',
+    city: 'Tumkur',
+    district: 'Tumkur',
+    latitude: 13.3409,
+    longitude: 77.1010,
+    total_capacity_kg: 40000,
+    current_used_kg: 18000,
+    available_kg: 22000,
+    has_temperature_control: false,
+    has_humidity_control: false,
+    temperature_range_min: 20,
+    temperature_range_max: 30,
+    humidity_range_min: 40,
+    humidity_range_max: 70,
+    price_per_kg_per_day: 0.12,
+    min_storage_days: 1,
+    operating_hours_open: '08:00',
+    operating_hours_close: '18:00',
+    accepts_weekend: true,
+    phone: '9876543234',
+    email: 'tumkur.depo@agro.in',
+    contact_person: 'Manjunath Gowda',
+    rating: 4.5,
+    is_active: true,
+    is_verified: true,
+    special_features: ['Waterproof Covered Shed', 'CCTV Security', 'Direct Truck Access Ramp']
+  },
+  {
+    id: 6,
+    name: 'Belagavi Multi-Commodity Cold Vault',
+    location_type: 'cold_storage',
+    address: 'Khanapur Road, Auto Nagar, Belagavi',
+    city: 'Belagavi',
+    district: 'Belagavi',
+    latitude: 15.8497,
+    longitude: 74.4977,
+    total_capacity_kg: 30000,
+    current_used_kg: 9500,
+    available_kg: 20500,
+    has_temperature_control: true,
+    has_humidity_control: true,
+    temperature_range_min: 0,
+    temperature_range_max: 5,
+    humidity_range_min: 88,
+    humidity_range_max: 98,
+    price_per_kg_per_day: 0.32,
+    min_storage_days: 3,
+    operating_hours_open: '07:00',
+    operating_hours_close: '22:00',
+    accepts_weekend: true,
+    phone: '9876543235',
+    email: 'belagavi.coldvault@cargo.in',
+    contact_person: 'Prashant Kulkarni',
+    rating: 4.88,
+    is_active: true,
+    is_verified: true,
+    special_features: ['Sub-zero Frozen Section', 'Controlled Atmosphere', 'Insurance Included']
+  }
+];
+
+const INITIAL_LOGISTICS_BOOKINGS = [
+  {
+    id: 101,
+    user_id: 1,
+    carrier_id: 1,
+    post_id: 1,
+    carrier_name: 'FastTransport Agro Cargo',
+    carrier_phone: '9876543220',
+    vehicle_type: 'truck',
+    vehicle_model: 'Tata 407 Heavy Truck',
+    pickup_address: 'Devanahalli Farm Cluster, Bengaluru Rural',
+    pickup_lat: 13.2483,
+    pickup_lng: 77.7126,
+    pickup_time: new Date(Date.now() - 3600000 * 2).toISOString(),
+    delivery_address: 'Yeshwantpur APMC Mandi, Bengaluru',
+    delivery_lat: 13.0234,
+    delivery_lng: 77.5456,
+    delivery_time: new Date(Date.now() + 3600000 * 1.5).toISOString(),
+    crop_type: 'Tomato',
+    quantity_kg: 250,
+    distance_km: 34.2,
+    duration_minutes: 52,
+    base_rate: 350.0,
+    distance_rate: 18.0,
+    total_cost: 965.60,
+    status: 'in_transit',
+    tracking_enabled: true,
+    carrier_lat: 13.1120,
+    carrier_lng: 77.6180,
+    carrier_speed_kmh: 42,
+    carrier_heading: 215,
+    distance_remaining_km: 12.4,
+    estimated_arrival_minutes: 18,
+    eta: new Date(Date.now() + 18 * 60000).toISOString(),
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+    milestones: [
+      { time: '07:30 AM', title: 'Booking Confirmed', description: 'Carrier accepted assignment and dispatched vehicle.', done: true },
+      { time: '08:15 AM', title: 'Produce Loaded', description: '250 kg Tomato loaded and inspected at farm gate.', done: true },
+      { time: '08:40 AM', title: 'In Transit', description: 'Vehicle moving along NH 44 towards Yeshwantpur APMC.', done: true },
+      { time: 'ETA 09:25 AM', title: 'Arrival & Offloading', description: 'Consignment approaching APMC Gate 4.', done: false }
+    ]
+  }
+];
+
+const INITIAL_STORAGE_BOOKINGS = [
+  {
+    id: 201,
+    farmer_id: 1,
+    storage_id: 1,
+    storage_name: 'CoolStore Agri-Cold Logistics Hub',
+    storage_address: '456 Cold Chain Corridor, Yeshwantpur Industrial Area',
+    quantity_kg: 500,
+    crop_type: 'Tomato',
+    produce_grade: 'A',
+    booking_date: new Date(Date.now() - 86400000 * 2).toISOString(),
+    check_in_date: '2026-09-17',
+    check_out_date: '2026-09-25',
+    days: 8,
+    price_per_kg_per_day: 0.30,
+    total_cost: 1200.0,
+    status: 'stored',
+    receipt_code: 'STR-BLR-8492',
+    farmer_checked_in: true,
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString()
+  }
+];
+
 let embeddedDb = null;
 
 function loadEmbeddedDb() {
@@ -237,6 +617,27 @@ function loadEmbeddedDb() {
   if (fs.existsSync(DB_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      // Ensure new tables are seeded if not present
+      let modified = false;
+      if (!data.logistics_carriers || data.logistics_carriers.length === 0) {
+        data.logistics_carriers = INITIAL_CARRIERS;
+        modified = true;
+      }
+      if (!data.storage_locations || data.storage_locations.length === 0) {
+        data.storage_locations = INITIAL_STORAGES;
+        modified = true;
+      }
+      if (!data.logistics_bookings) {
+        data.logistics_bookings = INITIAL_LOGISTICS_BOOKINGS;
+        modified = true;
+      }
+      if (!data.storage_bookings) {
+        data.storage_bookings = INITIAL_STORAGE_BOOKINGS;
+        modified = true;
+      }
+      if (modified) {
+        fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      }
       return data;
     } catch (e) {
       console.warn('[DB] Could not parse existing database.json, re-initializing seed.');
@@ -249,7 +650,11 @@ function loadEmbeddedDb() {
     fpo: INITIAL_FPO,
     fpo_joins: INITIAL_FPO_JOINS,
     mandi_prices: INITIAL_MANDI_PRICES,
-    cv_grades: []
+    cv_grades: [],
+    logistics_carriers: INITIAL_CARRIERS,
+    storage_locations: INITIAL_STORAGES,
+    logistics_bookings: INITIAL_LOGISTICS_BOOKINGS,
+    storage_bookings: INITIAL_STORAGE_BOOKINGS
   };
 
   fs.writeFileSync(DB_FILE, JSON.stringify(initialDb, null, 2), 'utf-8');
@@ -747,8 +1152,189 @@ async function query(text, params) {
   return queryEmbedded(text, params);
 }
 
+// Logistics Helpers
+function getCarriers(filter = {}) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  let carriers = embeddedDb.logistics_carriers || [];
+  if (filter.vehicle_type) {
+    carriers = carriers.filter(c => c.vehicle_type.toLowerCase() === filter.vehicle_type.toLowerCase());
+  }
+  if (filter.min_capacity) {
+    carriers = carriers.filter(c => c.capacity_kg >= Number(filter.min_capacity));
+  }
+  return carriers.filter(c => c.is_active);
+}
+
+function getCarrierById(id) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  return (embeddedDb.logistics_carriers || []).find(c => c.id === Number(id));
+}
+
+function createLogisticsBooking(data) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  if (!embeddedDb.logistics_bookings) embeddedDb.logistics_bookings = [];
+
+  const newId = embeddedDb.logistics_bookings.reduce((max, b) => Math.max(max, b.id), 100) + 1;
+  const carrier = getCarrierById(data.carrier_id);
+
+  const newBooking = {
+    id: newId,
+    user_id: Number(data.user_id),
+    carrier_id: Number(data.carrier_id),
+    post_id: data.post_id ? Number(data.post_id) : null,
+    carrier_name: carrier ? carrier.name : data.carrier_name || 'Assigned Logistics Carrier',
+    carrier_phone: carrier ? carrier.phone : data.carrier_phone || '9876543210',
+    vehicle_type: carrier ? carrier.vehicle_type : data.vehicle_type || 'truck',
+    vehicle_model: carrier ? carrier.vehicle_model : data.vehicle_model || 'Standard Cargo Vehicle',
+    pickup_address: data.pickup_address,
+    pickup_lat: Number(data.pickup_lat) || 12.9716,
+    pickup_lng: Number(data.pickup_lng) || 77.5946,
+    pickup_time: data.pickup_time || new Date().toISOString(),
+    delivery_address: data.delivery_address,
+    delivery_lat: Number(data.delivery_lat) || 13.0234,
+    delivery_lng: Number(data.delivery_lng) || 77.5456,
+    delivery_time: data.delivery_time || null,
+    crop_type: data.crop_type || 'Produce',
+    quantity_kg: Number(data.quantity_kg) || 100,
+    distance_km: Number(data.distance_km) || 15.0,
+    duration_minutes: Number(data.duration_minutes) || 30,
+    base_rate: Number(data.base_rate) || (carrier ? carrier.base_rate : 200),
+    distance_rate: Number(data.distance_rate) || (carrier ? carrier.rate_per_km : 15),
+    total_cost: Number(data.total_cost) || 450.0,
+    status: data.status || 'in_transit',
+    tracking_enabled: true,
+    carrier_lat: Number(data.pickup_lat) || 12.9716,
+    carrier_lng: Number(data.pickup_lng) || 77.5946,
+    carrier_speed_kmh: 40,
+    carrier_heading: 45,
+    distance_remaining_km: Number(data.distance_km) || 15.0,
+    estimated_arrival_minutes: Number(data.duration_minutes) || 30,
+    eta: new Date(Date.now() + (Number(data.duration_minutes) || 30) * 60000).toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    milestones: [
+      { time: 'Just Now', title: 'Booking Confirmed', description: 'Carrier assigned and vehicle dispatched for pickup.', done: true },
+      { time: 'Scheduled', title: 'Produce Loaded', description: 'Cargo will be weighed and verified on arrival.', done: false },
+      { time: 'En Route', title: 'In Transit', description: 'Real-time GPS tracking enabled along highway route.', done: false },
+      { time: 'Destination', title: 'Delivery Completed', description: 'Unloaded and receipt generated.', done: false }
+    ]
+  };
+
+  embeddedDb.logistics_bookings.unshift(newBooking);
+  saveEmbeddedDb();
+  return newBooking;
+}
+
+function getUserLogisticsBookings(userId) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  const bookings = embeddedDb.logistics_bookings || [];
+  return bookings
+    .filter(b => b.user_id === Number(userId))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+}
+
+function getLogisticsBookingById(id) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  return (embeddedDb.logistics_bookings || []).find(b => b.id === Number(id));
+}
+
+function updateLogisticsBooking(id, updates) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  const booking = (embeddedDb.logistics_bookings || []).find(b => b.id === Number(id));
+  if (booking) {
+    Object.assign(booking, updates, { updated_at: new Date().toISOString() });
+    saveEmbeddedDb();
+    return booking;
+  }
+  return null;
+}
+
+// Storage Helpers
+function getStorageLocations(filter = {}) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  let storages = embeddedDb.storage_locations || [];
+  if (filter.district) {
+    storages = storages.filter(s => s.district.toLowerCase() === filter.district.toLowerCase());
+  }
+  if (filter.location_type && filter.location_type !== 'all') {
+    storages = storages.filter(s => s.location_type.toLowerCase() === filter.location_type.toLowerCase());
+  }
+  if (filter.min_capacity) {
+    storages = storages.filter(s => s.available_kg >= Number(filter.min_capacity));
+  }
+  if (filter.max_price) {
+    storages = storages.filter(s => s.price_per_kg_per_day <= Number(filter.max_price));
+  }
+  return storages.filter(s => s.is_active);
+}
+
+function getStorageLocationById(id) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  return (embeddedDb.storage_locations || []).find(s => s.id === Number(id));
+}
+
+function createStorageBooking(data) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  if (!embeddedDb.storage_bookings) embeddedDb.storage_bookings = [];
+
+  const newId = embeddedDb.storage_bookings.reduce((max, b) => Math.max(max, b.id), 200) + 1;
+  const storage = getStorageLocationById(data.storage_id);
+
+  const newBooking = {
+    id: newId,
+    farmer_id: Number(data.farmer_id || data.user_id),
+    storage_id: Number(data.storage_id),
+    storage_name: storage ? storage.name : 'Agro Cold Hub',
+    storage_address: storage ? storage.address : '',
+    post_id: data.post_id ? Number(data.post_id) : null,
+    quantity_kg: Number(data.quantity_kg),
+    crop_type: data.crop_type || 'Tomato',
+    produce_grade: data.produce_grade || 'A',
+    produce_description: data.produce_description || '',
+    special_requirements: data.special_requirements || '',
+    check_in_date: data.check_in_date,
+    check_out_date: data.check_out_date,
+    days: Number(data.days) || 7,
+    price_per_kg_per_day: Number(data.price_per_kg_per_day) || (storage ? storage.price_per_kg_per_day : 0.30),
+    total_cost: Number(data.total_cost),
+    status: 'stored',
+    farmer_checked_in: true,
+    receipt_code: `STR-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    booking_date: new Date().toISOString(),
+    created_at: new Date().toISOString()
+  };
+
+  if (storage && storage.available_kg >= newBooking.quantity_kg) {
+    storage.current_used_kg += newBooking.quantity_kg;
+    storage.available_kg -= newBooking.quantity_kg;
+  }
+
+  embeddedDb.storage_bookings.unshift(newBooking);
+  saveEmbeddedDb();
+  return newBooking;
+}
+
+function getUserStorageBookings(userId) {
+  if (!embeddedDb) embeddedDb = loadEmbeddedDb();
+  const bookings = embeddedDb.storage_bookings || [];
+  return bookings
+    .filter(b => b.farmer_id === Number(userId))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+}
+
 module.exports = {
   initDb,
   query,
-  getEmbeddedDb: () => embeddedDb
+  getEmbeddedDb: () => embeddedDb,
+  saveEmbeddedDb,
+  getCarriers,
+  getCarrierById,
+  createLogisticsBooking,
+  getUserLogisticsBookings,
+  getLogisticsBookingById,
+  updateLogisticsBooking,
+  getStorageLocations,
+  getStorageLocationById,
+  createStorageBooking,
+  getUserStorageBookings
 };
